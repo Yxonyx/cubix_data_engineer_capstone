@@ -1,26 +1,31 @@
 [project]
 name = "cubix-data-engineer-capstone"
-version = "0.1.0"
+version = "0.2.24"
 description = ""
 authors = [
-    {name = "Yxonyx",email = "kaiserjonatan911@gmail.com"}
+    {name = "Yxonyx", email="kaiserjonatan911@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pyspark (>=4.0.1,<5.0.0)",
-    "numpy (>=1,<2)"
+    "pyspark (>=3.5.4)",
+    "numpy (>=1)"
 ]
 
-[tool.poetry]
-packages = [{include = "cubix_data_engineer_capstone", from = "src"}]
+[project.optional-dependencies]
+delta = ["delta-spark>=3.3.0"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pyarrow = "^19.0.0"
+pre-commit = "^4.0.1"
+pandas = "^2.2.3"
+
+[tool.pytest.ini_options]
+testpaths = ["./tests"]
+filterwarnings = ["ignore:DeprecationWarning"]
+addopts = "--disable-warnings -p no:warnings"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[dependency-groups]
-dev = [
-    "pytest (>=9.0.2,<10.0.0)",
-    "pyarrow (>=22.0.0,<23.0.0)"
-]
