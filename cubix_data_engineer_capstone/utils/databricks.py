@@ -9,7 +9,9 @@ def read_file_from_volume(full_path: str, format: str) -> DataFrame:
     :return:            DataFrame with the data.
     """
     if format not in ["csv", "parquet", "delta"]:
-        raise ValueError(f"Invalid format: {format}. Supported formates are: csv, parquet, delta.")
+        raise ValueError(
+            f"Invalid format: {format}. Supported formates are: csv, parquet, delta."
+        )
 
     spark = SparkSession.getActiveSession()
 
@@ -21,11 +23,11 @@ def read_file_from_volume(full_path: str, format: str) -> DataFrame:
 
 
 def write_file_to_volume(
-        df: DataFrame,
-        full_path: str,
-        format: str,
-        mode: str = "overwrite",
-        partition_by: list[str] = None
+    df: DataFrame,
+    full_path: str,
+    format: str,
+    mode: str = "overwrite",
+    partition_by: list[str] = None,
 ) -> None:
     """Writes a DataFrame to UC Volume as parquet / csv / delta format.
 
@@ -36,7 +38,9 @@ def write_file_to_volume(
     :param partition_by:    List of column to partition by, default is None.
     """
     if format not in ["csv", "parquet", "delta"]:
-        raise ValueError(f"Invalid format: {format}. Supported formates are: csv, parquet, delta.")
+        raise ValueError(
+            f"Invalid format: {format}. Supported formates are: csv, parquet, delta."
+        )
 
     writer = df.write.mode(mode).format(format)
     if format == "csv":

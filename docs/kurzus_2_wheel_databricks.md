@@ -1,7 +1,7 @@
 # Cubix Data Engineer Capstone - 2. Rész
 ## Python Wheel és Databricks Integráció
 
-**Dátum:** 2024-12-16  
+**Dátum:** 2024-12-16
 **Szerző:** Yxonyx (kaiserjonatan911@gmail.com)
 
 ---
@@ -265,5 +265,5 @@ Ha a függvényre **Ctrl+Click**-elsz, Databricks megmutatja a forráskódot - e
 
 ---
 
-**Előző rész:** [1. Projekt létrehozás](kurzus_1_projekt_letrehozas.md)  
+**Előző rész:** [1. Projekt létrehozás](kurzus_1_projekt_letrehozas.md)
 **Következő rész:** ETL Pipeline fejlesztés

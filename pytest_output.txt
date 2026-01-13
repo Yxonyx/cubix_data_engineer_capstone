@@ -1,0 +1,635 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\User\spark_env\Python311\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\User\.gemini\antigravity\scratch\cubix_data_engineer_capstone
+configfile: pyproject.toml
+plugins: anyio-4.11.0
+collecting ... collected 1 item
+
+tests/etl/silver/test_calendar.py::test_get_calendar FAILED              [100%]
+
+================================== FAILURES ===================================
+______________________________ test_get_calendar ______________________________
+
+spark = <pyspark.sql.session.SparkSession object at 0x0000016A79DF9550>
+
+    def test_get_calendar(spark):
+        """
+        Positive test that the function get_calendar returns the expected DataFrame.
+        """
+        test_data = spark.createDataFrame(
+            [
+                ("2017-01-01", "7", "Sunday", "January", "1", "1", "52", "1", "2017", "2016", "1", "1", "7", "1", "201701", "extra_value"),
+                ("2017-01-01", "7", "Sunday", "January", "1", "1", "52", "1", "2017", "2016", "1", "1", "7", "1", "201701", "extra_value"),
+            ],
+            schema=[
+                "Date",
+                "DayNumberOfWeek",
+                "DayName",
+                "MonthName",
+                "MonthNumberOfYear",
+                "DayNumberOfYear",
+                "WeekNumberOfYear",
+                "CalendarQuarter",
+                "CalendarYear",
+                "FiscalYear",
+                "FiscalSemester",
+                "FiscalQuarter",
+                "FinMonthNumberOfYear",
+                "DayNumberOfMonth",
+                "MonthID",
+                "extra_col"
+            ]
+        )
+    
+        results = get_calendar(test_data)
+    
+        expected_schema = st.StructType(
+            [
+                st.StructField("Date", st.DateType(), True),
+                st.StructField("DayNumberOfWeek", st.IntegerType(), True),
+                st.StructField("DayName", st.StringType(), True),
+                st.StructField("MonthName", st.StringType(), True),
+                st.StructField("MonthNumberOfYear", st.IntegerType(), True),
+                st.StructField("DayNumberOfYear", st.IntegerType(), True),
+                st.StructField("WeekNumberOfYear", st.IntegerType(), True),
+                st.StructField("CalendarQuarter", st.IntegerType(), True),
+                st.StructField("CalendarYear", st.IntegerType(), True),
+                st.StructField("FiscalYear", st.IntegerType(), True),
+                st.StructField("FiscalSemester", st.IntegerType(), True),
+                st.StructField("FiscalQuarter", st.IntegerType(), True),
+                st.StructField("FinMonthNumberOfYear", st.IntegerType(), True),
+                st.StructField("DayNumberOfMonth", st.IntegerType(), True),
+                st.StructField("MonthID", st.IntegerType(), True),
+            ]
+        )
+    
+        expected = spark.createDataFrame(
+            [
+                (
+                    datetime(2017, 1, 1),
+                    7,
+                    "Sunday",
+                    "January",
+                    1,
+                    1,
+                    52,
+                    1,
+                    2017,
+                    2016,
+                    1,
+                    1,
+                    7,
+                    1,
+                    201701
+                )
+            ],
+            schema=expected_schema
+        )
+    
+>       spark_testing.assertDataFrameEqual(results, expected)
+
+tests\etl\silver\test_calendar.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+actual = DataFrame[Date: date, DayNumberOfWeek: int, DayName: string, MonthName: string, MonthNumberOfYear: int, DayNumberOfYea...scalYear: int, FiscalSemester: int, FiscalQuarter: int, FinMonthNumberOfYear: int, DayNumberOfMonth: int, MonthID: int]
+expected = DataFrame[Date: date, DayNumberOfWeek: int, DayName: string, MonthName: string, MonthNumberOfYear: int, DayNumberOfYea...scalYear: int, FiscalSemester: int, FiscalQuarter: int, FinMonthNumberOfYear: int, DayNumberOfMonth: int, MonthID: int]
+checkRowOrder = False, rtol = 1e-05, atol = 1e-08
+
+    def assertDataFrameEqual(
+        actual: Union[DataFrame, "pandas.DataFrame", "pyspark.pandas.DataFrame", List[Row]],
+        expected: Union[DataFrame, "pandas.DataFrame", "pyspark.pandas.DataFrame", List[Row]],
+        checkRowOrder: bool = False,
+        rtol: float = 1e-5,
+        atol: float = 1e-8,
+    ):
+        r"""
+        A util function to assert equality between `actual` and `expected`
+        (DataFrames or lists of Rows), with optional parameters `checkRowOrder`, `rtol`, and `atol`.
+    
+        Supports Spark, Spark Connect, pandas, and pandas-on-Spark DataFrames.
+        For more information about pandas-on-Spark DataFrame equality, see the docs for
+        `assertPandasOnSparkEqual`.
+    
+        .. versionadded:: 3.5.0
+    
+        Parameters
+        ----------
+        actual : DataFrame (Spark, Spark Connect, pandas, or pandas-on-Spark) or list of Rows
+            The DataFrame that is being compared or tested.
+        expected : DataFrame (Spark, Spark Connect, pandas, or pandas-on-Spark) or list of Rows
+            The expected result of the operation, for comparison with the actual result.
+        checkRowOrder : bool, optional
+            A flag indicating whether the order of rows should be considered in the comparison.
+            If set to `False` (default), the row order is not taken into account.
+            If set to `True`, the order of rows is important and will be checked during comparison.
+            (See Notes)
+        rtol : float, optional
+            The relative tolerance, used in asserting approximate equality for float values in actual
+            and expected. Set to 1e-5 by default. (See Notes)
+        atol : float, optional
+            The absolute tolerance, used in asserting approximate equality for float values in actual
+            and expected. Set to 1e-8 by default. (See Notes)
+    
+        Notes
+        -----
+        When `assertDataFrameEqual` fails, the error message uses the Python `difflib` library to
+        display a diff log of each row that differs in `actual` and `expected`.
+    
+        For `checkRowOrder`, note that PySpark DataFrame ordering is non-deterministic, unless
+        explicitly sorted.
+    
+        Note that schema equality is checked only when `expected` is a DataFrame (not a list of Rows).
+    
+        For DataFrames with float values, assertDataFrame asserts approximate equality.
+        Two float values a and b are approximately equal if the following equation is True:
+    
+        ``absolute(a - b) <= (atol + rtol * absolute(b))``.
+    
+        Examples
+        --------
+        >>> df1 = spark.createDataFrame(data=[("1", 1000), ("2", 3000)], schema=["id", "amount"])
+        >>> df2 = spark.createDataFrame(data=[("1", 1000), ("2", 3000)], schema=["id", "amount"])
+        >>> assertDataFrameEqual(df1, df2)  # pass, DataFrames are identical
+    
+        >>> df1 = spark.createDataFrame(data=[("1", 0.1), ("2", 3.23)], schema=["id", "amount"])
+        >>> df2 = spark.createDataFrame(data=[("1", 0.109), ("2", 3.23)], schema=["id", "amount"])
+        >>> assertDataFrameEqual(df1, df2, rtol=1e-1)  # pass, DataFrames are approx equal by rtol
+    
+        >>> df1 = spark.createDataFrame(data=[(1, 1000), (2, 3000)], schema=["id", "amount"])
+        >>> list_of_rows = [Row(1, 1000), Row(2, 3000)]
+        >>> assertDataFrameEqual(df1, list_of_rows)  # pass, actual and expected data are equal
+    
+        >>> import pyspark.pandas as ps
+        >>> df1 = ps.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6], 'c': [7, 8, 9]})
+        >>> df2 = ps.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6], 'c': [7, 8, 9]})
+        >>> assertDataFrameEqual(df1, df2)  # pass, pandas-on-Spark DataFrames are equal
+    
+        >>> df1 = spark.createDataFrame(
+        ...     data=[("1", 1000.00), ("2", 3000.00), ("3", 2000.00)], schema=["id", "amount"])
+        >>> df2 = spark.createDataFrame(
+        ...     data=[("1", 1001.00), ("2", 3000.00), ("3", 2003.00)], schema=["id", "amount"])
+        >>> assertDataFrameEqual(df1, df2)  # doctest: +IGNORE_EXCEPTION_DETAIL
+        Traceback (most recent call last):
+        ...
+        PySparkAssertionError: [DIFFERENT_ROWS] Results do not match: ( 66.66667 % )
+        *** actual ***
+        ! Row(id='1', amount=1000.0)
+        Row(id='2', amount=3000.0)
+        ! Row(id='3', amount=2000.0)
+        *** expected ***
+        ! Row(id='1', amount=1001.0)
+        Row(id='2', amount=3000.0)
+        ! Row(id='3', amount=2003.0)
+        """
+        if actual is None and expected is None:
+            return True
+        elif actual is None:
+            raise PySparkAssertionError(
+                error_class="INVALID_TYPE_DF_EQUALITY_ARG",
+                message_parameters={
+                    "expected_type": "Union[DataFrame, ps.DataFrame, List[Row]]",
+                    "arg_name": "actual",
+                    "actual_type": None,
+                },
+            )
+        elif expected is None:
+            raise PySparkAssertionError(
+                error_class="INVALID_TYPE_DF_EQUALITY_ARG",
+                message_parameters={
+                    "expected_type": "Union[DataFrame, ps.DataFrame, List[Row]]",
+                    "arg_name": "expected",
+                    "actual_type": None,
+                },
+            )
+    
+        has_pandas = False
+        try:
+            # If pandas dependencies are available, allow pandas or pandas-on-Spark DataFrame
+            import pyspark.pandas as ps
+            import pandas as pd
+            from pyspark.testing.pandasutils import PandasOnSparkTestUtils
+    
+            has_pandas = True
+        except ImportError:
+            # no pandas, so we won't call pandasutils functions
+            pass
+    
+        if has_pandas:
+            if (
+                isinstance(actual, pd.DataFrame)
+                or isinstance(expected, pd.DataFrame)
+                or isinstance(actual, ps.DataFrame)
+                or isinstance(expected, ps.DataFrame)
+            ):
+                # handle pandas DataFrames
+                # assert approximate equality for float data
+                return PandasOnSparkTestUtils().assert_eq(
+                    actual, expected, almost=True, rtol=rtol, atol=atol, check_row_order=checkRowOrder
+                )
+    
+            from pyspark.sql.utils import get_dataframe_class
+    
+            # if is_remote(), allow Connect DataFrame
+            SparkDataFrame = get_dataframe_class()
+    
+            if not isinstance(actual, (DataFrame, SparkDataFrame, list)):
+                raise PySparkAssertionError(
+                    error_class="INVALID_TYPE_DF_EQUALITY_ARG",
+                    message_parameters={
+                        "expected_type": "Union[DataFrame, ps.DataFrame, List[Row]]",
+                        "arg_name": "actual",
+                        "actual_type": type(actual),
+                    },
+                )
+            elif not isinstance(expected, (DataFrame, SparkDataFrame, list)):
+                raise PySparkAssertionError(
+                    error_class="INVALID_TYPE_DF_EQUALITY_ARG",
+                    message_parameters={
+                        "expected_type": "Union[DataFrame, ps.DataFrame, List[Row]]",
+                        "arg_name": "expected",
+                        "actual_type": type(expected),
+                    },
+                )
+    
+        def compare_rows(r1: Row, r2: Row):
+            def compare_vals(val1, val2):
+                if isinstance(val1, list) and isinstance(val2, list):
+                    return len(val1) == len(val2) and all(
+                        compare_vals(x, y) for x, y in zip(val1, val2)
+                    )
+                elif isinstance(val1, Row) and isinstance(val2, Row):
+                    return all(compare_vals(x, y) for x, y in zip(val1, val2))
+                elif isinstance(val1, dict) and isinstance(val2, dict):
+                    return (
+                        len(val1.keys()) == len(val2.keys())
+                        and val1.keys() == val2.keys()
+                        and all(compare_vals(val1[k], val2[k]) for k in val1.keys())
+                    )
+                elif isinstance(val1, float) and isinstance(val2, float):
+                    if abs(val1 - val2) > (atol + rtol * abs(val2)):
+                        return False
+                else:
+                    if val1 != val2:
+                        return False
+                return True
+    
+            if r1 is None and r2 is None:
+                return True
+            elif r1 is None or r2 is None:
+                return False
+    
+            return compare_vals(r1, r2)
+    
+        def assert_rows_equal(rows1: List[Row], rows2: List[Row]):
+            zipped = list(zip_longest(rows1, rows2))
+            diff_rows_cnt = 0
+            diff_rows = False
+    
+            rows_str1 = ""
+            rows_str2 = ""
+    
+            # count different rows
+            for r1, r2 in zipped:
+                rows_str1 += str(r1) + "\n"
+                rows_str2 += str(r2) + "\n"
+                if not compare_rows(r1, r2):
+                    diff_rows_cnt += 1
+                    diff_rows = True
+    
+            generated_diff = _context_diff(
+                actual=rows_str1.splitlines(), expected=rows_str2.splitlines(), n=len(zipped)
+            )
+    
+            if diff_rows:
+                error_msg = "Results do not match: "
+                percent_diff = (diff_rows_cnt / len(zipped)) * 100
+                error_msg += "( %.5f %% )" % percent_diff
+                error_msg += "\n" + "\n".join(generated_diff)
+                raise PySparkAssertionError(
+                    error_class="DIFFERENT_ROWS",
+                    message_parameters={"error_msg": error_msg},
+                )
+    
+        # convert actual and expected to list
+        if not isinstance(actual, list) and not isinstance(expected, list):
+            # only compare schema if expected is not a List
+            assertSchemaEqual(actual.schema, expected.schema)
+    
+        if not isinstance(actual, list):
+            if actual.isStreaming:
+                raise PySparkAssertionError(
+                    error_class="UNSUPPORTED_OPERATION",
+                    message_parameters={"operation": "assertDataFrameEqual on streaming DataFrame"},
+                )
+>           actual_list = actual.collect()
+                          ^^^^^^^^^^^^^^^^
+
+..\..\..\..\spark_env\Python311\Lib\site-packages\pyspark\testing\utils.py:595: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = DataFrame[Date: date, DayNumberOfWeek: int, DayName: string, MonthName: string, MonthNumberOfYear: int, DayNumberOfYea...scalYear: int, FiscalSemester: int, FiscalQuarter: int, FinMonthNumberOfYear: int, DayNumberOfMonth: int, MonthID: int]
+
+    def collect(self) -> List[Row]:
+        """Returns all the records as a list of :class:`Row`.
+    
+        .. versionadded:: 1.3.0
+    
+        .. versionchanged:: 3.4.0
+            Supports Spark Connect.
+    
+        Returns
+        -------
+        list
+            List of rows.
+    
+        Examples
+        --------
+        >>> df = spark.createDataFrame(
+        ...     [(14, "Tom"), (23, "Alice"), (16, "Bob")], ["age", "name"])
+        >>> df.collect()
+        [Row(age=14, name='Tom'), Row(age=23, name='Alice'), Row(age=16, name='Bob')]
+        """
+        with SCCallSiteSync(self._sc):
+>           sock_info = self._jdf.collectToPython()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+..\..\..\..\spark_env\Python311\Lib\site-packages\pyspark\sql\dataframe.py:1263: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <py4j.java_gateway.JavaMember object at 0x0000016A7EAD8290>, args = ()
+args_command = '', temp_args = [], command = 'c\no80\ncollectToPython\ne\n'
+
+    def __call__(self, *args):
+        args_command, temp_args = self._build_args(*args)
+    
+        command = proto.CALL_COMMAND_NAME +\
+            self.command_header +\
+            args_command +\
+            proto.END_COMMAND_PART
+    
+        answer = self.gateway_client.send_command(command)
+>       return_value = get_return_value(
+            answer, self.gateway_client, self.target_id, self.name)
+
+..\..\..\..\spark_env\Python311\Lib\site-packages\py4j\java_gateway.py:1322: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+a = ('xro96', <py4j.clientserver.JavaClient object at 0x0000016A79860D90>, 'o80', 'collectToPython')
+kw = {}, converted = UnknownException()
+
+    def deco(*a: Any, **kw: Any) -> Any:
+        try:
+>           return f(*a, **kw)
+                   ^^^^^^^^^^^
+
+..\..\..\..\spark_env\Python311\Lib\site-packages\pyspark\errors\exceptions\captured.py:179: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+answer = 'xro96'
+gateway_client = <py4j.clientserver.JavaClient object at 0x0000016A79860D90>
+target_id = 'o80', name = 'collectToPython'
+
+    def get_return_value(answer, gateway_client, target_id=None, name=None):
+        """Converts an answer received from the Java gateway into a Python object.
+    
+        For example, string representation of integers are converted to Python
+        integer, string representation of objects are converted to JavaObject
+        instances, etc.
+    
+        :param answer: the string returned by the Java gateway
+        :param gateway_client: the gateway client used to communicate with the Java
+            Gateway. Only necessary if the answer is a reference (e.g., object,
+            list, map)
+        :param target_id: the name of the object from which the answer comes from
+            (e.g., *object1* in `object1.hello()`). Optional.
+        :param name: the name of the member from which the answer comes from
+            (e.g., *hello* in `object1.hello()`). Optional.
+        """
+        if is_error(answer)[0]:
+            if len(answer) > 1:
+                type = answer[1]
+                value = OUTPUT_CONVERTER[type](answer[2:], gateway_client)
+                if answer[1] == REFERENCE_TYPE:
+>                   raise Py4JJavaError(
+                        "An error occurred while calling {0}{1}{2}.\n".
+                        format(target_id, ".", name), value)
+E                   py4j.protocol.Py4JJavaError: An error occurred while calling o80.collectToPython.
+E                   : org.apache.spark.SparkException: Job aborted due to stage failure: Task 0 in stage 0.0 failed 1 times, most recent failure: Lost task 0.0 in stage 0.0 (TID 0) (DESKTOP-VUREK59 executor driver): java.io.IOException: Cannot run program "C:\Users\User\OneDrive\Desktop\spark\Python311\python.exe": CreateProcess error=2, A rendszer nem talßlja a megadott fßjlt
+
+E                   	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1143)
+
+E                   	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1073)
+
+E                   	at org.apache.spark.api.python.PythonWorkerFactory.createSimpleWorker(PythonWorkerFactory.scala:181)
+
+E                   	at org.apache.spark.api.python.PythonWorkerFactory.create(PythonWorkerFactory.scala:109)
+
+E                   	at org.apache.spark.SparkEnv.createPythonWorker(SparkEnv.scala:124)
+
+E                   	at org.apache.spark.api.python.BasePythonRunner.compute(PythonRunner.scala:174)
+
+E                   	at org.apache.spark.api.python.PythonRDD.compute(PythonRDD.scala:67)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.shuffle.ShuffleWriteProcessor.write(ShuffleWriteProcessor.scala:59)
+
+E                   	at org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:104)
+
+E                   	at org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:54)
+
+E                   	at org.apache.spark.TaskContext.runTaskWithListeners(TaskContext.scala:166)
+
+E                   	at org.apache.spark.scheduler.Task.run(Task.scala:141)
+
+E                   	at org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$4(Executor.scala:621)
+
+E                   	at org.apache.spark.util.SparkErrorUtils.tryWithSafeFinally(SparkErrorUtils.scala:64)
+
+E                   	at org.apache.spark.util.SparkErrorUtils.tryWithSafeFinally$(SparkErrorUtils.scala:61)
+
+E                   	at org.apache.spark.util.Utils$.tryWithSafeFinally(Utils.scala:94)
+
+E                   	at org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:624)
+
+E                   	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+
+E                   	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+
+E                   	at java.base/java.lang.Thread.run(Thread.java:840)
+
+E                   Caused by: java.io.IOException: CreateProcess error=2, A rendszer nem talßlja a megadott fßjlt
+
+E                   	at java.base/java.lang.ProcessImpl.create(Native Method)
+
+E                   	at java.base/java.lang.ProcessImpl.<init>(ProcessImpl.java:505)
+
+E                   	at java.base/java.lang.ProcessImpl.start(ProcessImpl.java:158)
+
+E                   	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
+
+E                   	... 36 more
+
+E                   
+E                   Driver stacktrace:
+
+E                   	at org.apache.spark.scheduler.DAGScheduler.failJobAndIndependentStages(DAGScheduler.scala:2898)
+
+E                   	at org.apache.spark.scheduler.DAGScheduler.$anonfun$abortStage$2(DAGScheduler.scala:2834)
+
+E                   	at org.apache.spark.scheduler.DAGScheduler.$anonfun$abortStage$2$adapted(DAGScheduler.scala:2833)
+
+E                   	at scala.collection.mutable.ResizableArray.foreach(ResizableArray.scala:62)
+
+E                   	at scala.collection.mutable.ResizableArray.foreach$(ResizableArray.scala:55)
+
+E                   	at scala.collection.mutable.ArrayBuffer.foreach(ArrayBuffer.scala:49)
+
+E                   	at org.apache.spark.scheduler.DAGScheduler.abortStage(DAGScheduler.scala:2833)
+
+E                   	at org.apache.spark.scheduler.DAGScheduler.$anonfun$handleTaskSetFailed$1(DAGScheduler.scala:1253)
+
+E                   	at org.apache.spark.scheduler.DAGScheduler.$anonfun$handleTaskSetFailed$1$adapted(DAGScheduler.scala:1253)
+
+E                   	at scala.Option.foreach(Option.scala:407)
+
+E                   	at org.apache.spark.scheduler.DAGScheduler.handleTaskSetFailed(DAGScheduler.scala:1253)
+
+E                   	at org.apache.spark.scheduler.DAGSchedulerEventProcessLoop.doOnReceive(DAGScheduler.scala:3102)
+
+E                   	at org.apache.spark.scheduler.DAGSchedulerEventProcessLoop.onReceive(DAGScheduler.scala:3036)
+
+E                   	at org.apache.spark.scheduler.DAGSchedulerEventProcessLoop.onReceive(DAGScheduler.scala:3025)
+
+E                   	at org.apache.spark.util.EventLoop$$anon$1.run(EventLoop.scala:49)
+
+E                   Caused by: java.io.IOException: Cannot run program "C:\Users\User\OneDrive\Desktop\spark\Python311\python.exe": CreateProcess error=2, A rendszer nem talßlja a megadott fßjlt
+
+E                   	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1143)
+
+E                   	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1073)
+
+E                   	at org.apache.spark.api.python.PythonWorkerFactory.createSimpleWorker(PythonWorkerFactory.scala:181)
+
+E                   	at org.apache.spark.api.python.PythonWorkerFactory.create(PythonWorkerFactory.scala:109)
+
+E                   	at org.apache.spark.SparkEnv.createPythonWorker(SparkEnv.scala:124)
+
+E                   	at org.apache.spark.api.python.BasePythonRunner.compute(PythonRunner.scala:174)
+
+E                   	at org.apache.spark.api.python.PythonRDD.compute(PythonRDD.scala:67)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)
+
+E                   	at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+
+E                   	at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+
+E                   	at org.apache.spark.shuffle.ShuffleWriteProcessor.write(ShuffleWriteProcessor.scala:59)
+
+E                   	at org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:104)
+
+E                   	at org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:54)
+
+E                   	at org.apache.spark.TaskContext.runTaskWithListeners(TaskContext.scala:166)
+
+E                   	at org.apache.spark.scheduler.Task.run(Task.scala:141)
+
+E                   	at org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$4(Executor.scala:621)
+
+E                   	at org.apache.spark.util.SparkErrorUtils.tryWithSafeFinally(SparkErrorUtils.scala:64)
+
+E                   	at org.apache.spark.util.SparkErrorUtils.tryWithSafeFinally$(SparkErrorUtils.scala:61)
+
+E                   	at org.apache.spark.util.Utils$.tryWithSafeFinally(Utils.scala:94)
+
+E                   	at org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:624)
+
+E                   	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+
+E                   	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+
+E                   	at java.base/java.lang.Thread.run(Thread.java:840)
+
+E                   Caused by: java.io.IOException: CreateProcess error=2, A rendszer nem talßlja a megadott fßjlt
+
+E                   	at java.base/java.lang.ProcessImpl.create(Native Method)
+
+E                   	at java.base/java.lang.ProcessImpl.<init>(ProcessImpl.java:505)
+
+E                   	at java.base/java.lang.ProcessImpl.start(ProcessImpl.java:158)
+
+E                   	at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)
+
+E                   	... 36 more
+
+..\..\..\..\spark_env\Python311\Lib\site-packages\py4j\protocol.py:326: Py4JJavaError
+---------------------------- Captured stderr call -----------------------------
+26/01/11 15:21:47 ERROR Executor: Exception in task 0.0 in stage 0.0 (TID 0)\r\njava.io.IOException: Cannot run program "C:\\Users\\User\\OneDrive\\Desktop\\spark\\Python311\\python.exe": CreateProcess error=2, A rendszer nem tal\ufffdlja a megadott f\ufffdjlt\r\n\tat java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1143)\r\n\tat java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1073)\r\n\tat org.apache.spark.api.python.PythonWorkerFactory.createSimpleWorker(PythonWorkerFactory.scala:181)\r\n\tat org.apache.spark.api.python.PythonWorkerFactory.create(PythonWorkerFactory.scala:109)\r\n\tat org.apache.spark.SparkEnv.createPythonWorker(SparkEnv.scala:124)\r\n\tat org.apache.spark.api.python.BasePythonRunner.compute(PythonRunner.scala:174)\r\n\tat org.apache.spark.api.python.PythonRDD.compute(PythonRDD.scala:67)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.shuffle.ShuffleWriteProcessor.write(ShuffleWriteProcessor.scala:59)\r\n\tat org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:104)\r\n\tat org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:54)\r\n\tat org.apache.spark.TaskContext.runTaskWithListeners(TaskContext.scala:166)\r\n\tat org.apache.spark.scheduler.Task.run(Task.scala:141)\r\n\tat org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$4(Executor.scala:621)\r\n\tat org.apache.spark.util.SparkErrorUtils.tryWithSafeFinally(SparkErrorUtils.scala:64)\r\n\tat org.apache.spark.util.SparkErrorUtils.tryWithSafeFinally$(SparkErrorUtils.scala:61)\r\n\tat org.apache.spark.util.Utils$.tryWithSafeFinally(Utils.scala:94)\r\n\tat org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:624)\r\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)\r\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)\r\n\tat java.base/java.lang.Thread.run(Thread.java:840)\r\nCaused by: java.io.IOException: CreateProcess error=2, A rendszer nem tal\ufffdlja a megadott f\ufffdjlt\r\n\tat java.base/java.lang.ProcessImpl.create(Native Method)\r\n\tat java.base/java.lang.ProcessImpl.<init>(ProcessImpl.java:505)\r\n\tat java.base/java.lang.ProcessImpl.start(ProcessImpl.java:158)\r\n\tat java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)\r\n\t... 36 more\r\n26/01/11 15:21:47 WARN TaskSetManager: Lost task 0.0 in stage 0.0 (TID 0) (DESKTOP-VUREK59 executor driver): java.io.IOException: Cannot run program "C:\\Users\\User\\OneDrive\\Desktop\\spark\\Python311\\python.exe": CreateProcess error=2, A rendszer nem tal\ufffdlja a megadott f\ufffdjlt\r\n\tat java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1143)\r\n\tat java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1073)\r\n\tat org.apache.spark.api.python.PythonWorkerFactory.createSimpleWorker(PythonWorkerFactory.scala:181)\r\n\tat org.apache.spark.api.python.PythonWorkerFactory.create(PythonWorkerFactory.scala:109)\r\n\tat org.apache.spark.SparkEnv.createPythonWorker(SparkEnv.scala:124)\r\n\tat org.apache.spark.api.python.BasePythonRunner.compute(PythonRunner.scala:174)\r\n\tat org.apache.spark.api.python.PythonRDD.compute(PythonRDD.scala:67)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)\r\n\tat org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)\r\n\tat org.apache.spark.rdd.RDD.iterator(RDD.scala:331)\r\n\tat org.apache.spark.shuffle.ShuffleWriteProcessor.write(ShuffleWriteProcessor.scala:59)\r\n\tat org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:104)\r\n\tat org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:54)\r\n\tat org.apache.spark.TaskContext.runTaskWithListeners(TaskContext.scala:166)\r\n\tat org.apache.spark.scheduler.Task.run(Task.scala:141)\r\n\tat org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$4(Executor.scala:621)\r\n\tat org.apache.spark.util.SparkErrorUtils.tryWithSafeFinally(SparkErrorUtils.scala:64)\r\n\tat org.apache.spark.util.SparkErrorUtils.tryWithSafeFinally$(SparkErrorUtils.scala:61)\r\n\tat org.apache.spark.util.Utils$.tryWithSafeFinally(Utils.scala:94)\r\n\tat org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:624)\r\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)\r\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)\r\n\tat java.base/java.lang.Thread.run(Thread.java:840)\r\nCaused by: java.io.IOException: CreateProcess error=2, A rendszer nem tal\ufffdlja a megadott f\ufffdjlt\r\n\tat java.base/java.lang.ProcessImpl.create(Native Method)\r\n\tat java.base/java.lang.ProcessImpl.<init>(ProcessImpl.java:505)\r\n\tat java.base/java.lang.ProcessImpl.start(ProcessImpl.java:158)\r\n\tat java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1110)\r\n\t... 36 more\r\n\r\n26/01/11 15:21:47 ERROR TaskSetManager: Task 0 in stage 0.0 failed 1 times; aborting job\r
+=========================== short test summary info ===========================
+FAILED tests/etl/silver/test_calendar.py::test_get_calendar - py4j.protocol.P...
+============================== 1 failed in 5.64s ==============================
+SUCCESS: The process with PID 56144 (child process of PID 48608) has been terminated.
+SUCCESS: The process with PID 48608 (child process of PID 56016) has been terminated.
+SUCCESS: The process with PID 56016 (child process of PID 55696) has been terminated.

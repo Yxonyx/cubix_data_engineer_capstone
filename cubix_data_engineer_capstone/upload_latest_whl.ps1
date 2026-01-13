@@ -5,8 +5,8 @@ $ErrorActionPreference = "Stop"
 
 # Find the latest wheel file
 $distDir = Join-Path $PSScriptRoot ".." "dist"
-$latestWheel = Get-ChildItem -Path $distDir -Filter "*.whl" | 
-    Sort-Object LastWriteTime -Descending | 
+$latestWheel = Get-ChildItem -Path $distDir -Filter "*.whl" |
+    Sort-Object LastWriteTime -Descending |
     Select-Object -First 1
 
 if (-not $latestWheel) {

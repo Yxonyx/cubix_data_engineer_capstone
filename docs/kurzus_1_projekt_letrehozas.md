@@ -1,7 +1,7 @@
 # Cubix Data Engineer Capstone - 1. Rész
 ## Python Projekt Létrehozása Poetry-vel
 
-**Dátum:** 2024-12-15  
+**Dátum:** 2024-12-15
 **Szerző:** Yxonyx (kaiserjonatan911@gmail.com)
 
 ---

@@ -8,19 +8,19 @@ from typing import Optional
 @dataclass
 class Config:
     """Project configuration settings."""
-    
+
     # Databricks settings
     databricks_host: Optional[str] = None
     databricks_token: Optional[str] = None
-    
+
     # Data Lake settings
     storage_account_name: Optional[str] = None
     storage_account_key: Optional[str] = None
     container_name: str = "data"
-    
+
     # Spark settings
     app_name: str = "CubixDataEngineerCapstone"
-    
+
     @classmethod
     def from_env(cls) -> "Config":
         """Load configuration from environment variables."""
