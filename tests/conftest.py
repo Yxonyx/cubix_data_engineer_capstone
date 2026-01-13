@@ -2,13 +2,7 @@ from pyspark.sql import SparkSession
 from pytest import fixture
 
 
-SPARK = (
-    SparkSession
-    .builder
-    .master("local")
-    .appName("localTests")
-    .getOrCreate()
-)
+SPARK = SparkSession.builder.master("local").appName("localTests").getOrCreate()
 
 
 @fixture

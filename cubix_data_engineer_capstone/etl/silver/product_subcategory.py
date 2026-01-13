@@ -9,7 +9,7 @@ PRODUCT_SUBCATEGORY_MAPPING = {
     "epsn": "EnglishProductSubcategoryName",
     "spsn": "SpanishProductSubcategoryName",
     "fpsn": "FrenchProductSubcategoryName",
-    "pck": "ProductCategoryKey"
+    "pck": "ProductCategoryKey",
 }
 
 
@@ -20,8 +20,7 @@ def get_product_subcategory(product_subcategory_raw: DataFrame) -> DataFrame:
     :return:                        Mapped and filtered Product Subcategory data.
     """
     return (
-        product_subcategory_raw
-        .select(
+        product_subcategory_raw.select(
             sf.col("psk").cast("int"),
             sf.col("psak").cast("int"),
             sf.col("epsn"),

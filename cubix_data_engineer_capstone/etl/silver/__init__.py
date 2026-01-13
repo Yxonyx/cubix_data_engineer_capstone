@@ -19,5 +19,3 @@ __all__ = [
     "get_products",
     "get_sales",
 ]
-
-

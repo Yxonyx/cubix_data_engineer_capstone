@@ -12,7 +12,7 @@ PRODUCTS_MAPPING = {
     "ssl": "SafetyStockLevel",
     "listprice": "ListPrice",
     "size": "Size",
-    "rang": "Range"
+    "rang": "Range",
 }
 
 
@@ -23,8 +23,7 @@ def get_products(products_raw: DataFrame) -> DataFrame:
     :return:                Mapped and filtered Products data.
     """
     return (
-        products_raw
-        .select(
+        products_raw.select(
             sf.col("pk").cast("int"),
             sf.col("psck").cast("int"),
             sf.col("name"),

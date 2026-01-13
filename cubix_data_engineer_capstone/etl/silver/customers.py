@@ -12,7 +12,7 @@ CUSTOMERS_MAPPING = {
     "gender": "Gender",
     "income": "YearlyIncome",
     "childrenhome": "TotalChildren",
-    "occ": "Occupation"
+    "occ": "Occupation",
 }
 
 
@@ -23,8 +23,7 @@ def get_customers(customers_raw: DataFrame) -> DataFrame:
     :return:                Mapped and filtered Customers data.
     """
     return (
-        customers_raw
-        .select(
+        customers_raw.select(
             sf.col("ck").cast("int"),
             sf.col("gk").cast("int"),
             sf.col("name"),

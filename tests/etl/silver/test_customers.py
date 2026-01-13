@@ -17,28 +17,37 @@ def test_get_customers(spark):
             ("1", "10", "John Doe", "1990-05-15", "M", "M", "50000", "2", "Pro"),
         ],
         schema=[
-            "ck", "gk", "name", "bdate", "ms", "gender",
-            "income", "childrenhome", "occ"
-        ]
+            "ck",
+            "gk",
+            "name",
+            "bdate",
+            "ms",
+            "gender",
+            "income",
+            "childrenhome",
+            "occ",
+        ],
     )
 
     results = get_customers(test_data)
 
-    expected_schema = st.StructType([
-        st.StructField("CustomerKey", st.IntegerType(), True),
-        st.StructField("GeographyKey", st.IntegerType(), True),
-        st.StructField("CustomerName", st.StringType(), True),
-        st.StructField("BirthDate", st.DateType(), True),
-        st.StructField("MaritalStatus", st.StringType(), True),
-        st.StructField("Gender", st.StringType(), True),
-        st.StructField("YearlyIncome", st.IntegerType(), True),
-        st.StructField("TotalChildren", st.IntegerType(), True),
-        st.StructField("Occupation", st.StringType(), True),
-    ])
+    expected_schema = st.StructType(
+        [
+            st.StructField("CustomerKey", st.IntegerType(), True),
+            st.StructField("GeographyKey", st.IntegerType(), True),
+            st.StructField("CustomerName", st.StringType(), True),
+            st.StructField("BirthDate", st.DateType(), True),
+            st.StructField("MaritalStatus", st.StringType(), True),
+            st.StructField("Gender", st.StringType(), True),
+            st.StructField("YearlyIncome", st.IntegerType(), True),
+            st.StructField("TotalChildren", st.IntegerType(), True),
+            st.StructField("Occupation", st.StringType(), True),
+        ]
+    )
 
     expected = spark.createDataFrame(
         [(1, 10, "John Doe", datetime(1990, 5, 15), "M", "M", 50000, 2, "Pro")],
-        schema=expected_schema
+        schema=expected_schema,
     )
 
     spark_testing.assertDataFrameEqual(results, expected)

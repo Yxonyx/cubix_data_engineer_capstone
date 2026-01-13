@@ -13,8 +13,42 @@ def test_get_calendar(spark):
     """
     test_data = spark.createDataFrame(
         [
-            ("2017-01-01", "7", "Sunday", "January", "1", "1", "52", "1", "2017", "2016", "1", "1", "7", "1", "201701", "extra_value"),
-            ("2017-01-01", "7", "Sunday", "January", "1", "1", "52", "1", "2017", "2016", "1", "1", "7", "1", "201701", "extra_value"),
+            (
+                "2017-01-01",
+                "7",
+                "Sunday",
+                "January",
+                "1",
+                "1",
+                "52",
+                "1",
+                "2017",
+                "2016",
+                "1",
+                "1",
+                "7",
+                "1",
+                "201701",
+                "extra_value",
+            ),
+            (
+                "2017-01-01",
+                "7",
+                "Sunday",
+                "January",
+                "1",
+                "1",
+                "52",
+                "1",
+                "2017",
+                "2016",
+                "1",
+                "1",
+                "7",
+                "1",
+                "201701",
+                "extra_value",
+            ),
         ],
         schema=[
             "Date",
@@ -32,8 +66,8 @@ def test_get_calendar(spark):
             "FinMonthNumberOfYear",
             "DayNumberOfMonth",
             "MonthID",
-            "extra_col"
-        ]
+            "extra_col",
+        ],
     )
 
     results = get_calendar(test_data)
@@ -75,10 +109,10 @@ def test_get_calendar(spark):
                 1,
                 7,
                 1,
-                201701
+                201701,
             )
         ],
-        schema=expected_schema
+        schema=expected_schema,
     )
 
     spark_testing.assertDataFrameEqual(results, expected)

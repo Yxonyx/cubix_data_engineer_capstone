@@ -23,8 +23,8 @@ def test_get_sales(spark):
             "ck",
             "dateofshipping",
             "oquantity",
-            "extra_col"
-        ]
+            "extra_col",
+        ],
     )
 
     results = get_sales(test_data)
@@ -41,17 +41,8 @@ def test_get_sales(spark):
     )
 
     expected = spark.createDataFrame(
-        [
-            (
-                "SO001",
-                datetime(2017, 1, 1),
-                101,
-                201,
-                datetime(2017, 1, 5),
-                5
-            )
-        ],
-        schema=expected_schema
+        [("SO001", datetime(2017, 1, 1), 101, 201, datetime(2017, 1, 5), 5)],
+        schema=expected_schema,
     )
 
     spark_testing.assertDataFrameEqual(results, expected)

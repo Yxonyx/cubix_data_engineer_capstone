@@ -9,19 +9,18 @@ SALES_MAPPING = {
     "pk": "ProductKey",
     "ck": "CustomerKey",
     "dateofshipping": "ShipDate",
-    "oquantity": "OrderQuantity"
+    "oquantity": "OrderQuantity",
 }
 
 
 def get_sales(sales_raw: DataFrame) -> DataFrame:
-    """Map and filtered Sales data.
+    """Map and filter Sales data.
 
     :param sales_raw:   Raw Sales data.
     :return:            Mapped and filtered Sales data.
     """
     return (
-        sales_raw
-        .select(
+        sales_raw.select(
             sf.col("son"),
             sf.col("orderdate").cast("date"),
             sf.col("pk").cast("int"),

@@ -330,7 +330,7 @@ python -m pytest tests/ -v --tb=long
 ```toml
 [tool.pytest.ini_options]
 testpaths = ["./tests"]
-filterwarnings = ["ignore:DeprecationWarning"]
+filterwarnings = ["ignore::DeprecationWarning"]
 addopts = "--disable-warnings -p no:warnings"
 ```
 

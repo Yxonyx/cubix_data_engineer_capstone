@@ -1,7 +1,7 @@
 # Cubix Data Engineer Capstone - 3. Rész
 ## Kódminőség és Automatizálás
 
-**Dátum:** 2024-12-30  
+**Dátum:** 2024-12-30
 **Szerző:** Yxonyx (kaiserjonatan911@gmail.com)
 
 ---
@@ -229,7 +229,7 @@ mypy cubix_data_engineer_capstone/
 
 Vagy Poetry-vel (ha működik):
 ```powershell
-poetry add --group dev pre-commit ruff mypy
+poetry add --group dev pre-commit ruff mypy pyspark-stubs
 ```
 
 ### 2. Pre-commit hook-ok telepítése
@@ -332,5 +332,5 @@ Ha van hiba, a commit **blokkolódik** amíg nem javítod ki!
 
 ---
 
-**Előző rész:** [2. Wheel és Databricks](kurzus_2_wheel_databricks.md)  
+**Előző rész:** [2. Wheel és Databricks](kurzus_2_wheel_databricks.md)
 **Következő rész:** ETL Pipeline fejlesztés

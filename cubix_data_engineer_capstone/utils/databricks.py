@@ -10,7 +10,7 @@ def read_file_from_volume(full_path: str, format: str) -> DataFrame:
     """
     if format not in ["csv", "parquet", "delta"]:
         raise ValueError(
-            f"Invalid format: {format}. Supported formates are: csv, parquet, delta."
+            f"Invalid format: {format}. Supported formats are: csv, parquet, delta."
         )
 
     spark = SparkSession.getActiveSession()
@@ -39,7 +39,7 @@ def write_file_to_volume(
     """
     if format not in ["csv", "parquet", "delta"]:
         raise ValueError(
-            f"Invalid format: {format}. Supported formates are: csv, parquet, delta."
+            f"Invalid format: {format}. Supported formats are: csv, parquet, delta."
         )
 
     writer = df.write.mode(mode).format(format)

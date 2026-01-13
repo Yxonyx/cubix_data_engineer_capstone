@@ -8,7 +8,7 @@ PRODUCT_CATEGORY_MAPPING = {
     "pcak": "ProductCategoryAlternateKey",
     "epcn": "EnglishProductCategoryName",
     "spcn": "SpanishProductCategoryName",
-    "fpcn": "FrenchProductCategoryName"
+    "fpcn": "FrenchProductCategoryName",
 }
 
 
@@ -19,8 +19,7 @@ def get_product_category(product_category_raw: DataFrame) -> DataFrame:
     :return:                        Mapped and filtered Product Category data.
     """
     return (
-        product_category_raw
-        .select(
+        product_category_raw.select(
             sf.col("pck").cast("int"),
             sf.col("pcak").cast("int"),
             sf.col("epcn"),
